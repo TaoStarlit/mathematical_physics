@@ -26,7 +26,7 @@ model function is nothing to do with density distribution
 
 # Find the estimator
 For many models, a maximum likelihood estimator can be found as an explicit function of the observed data x1,x2,..,xn.
-by derivation: poission / normal 
+by derivation: poisson / normal 
 # system of two element equations
 for linear, it is just a problem of linear algebra, for nonlinear ??
 For many other models, however, no closed-form solution to the maximization problem is known or available, 
@@ -42,27 +42,39 @@ using mlab.normpdf draw the original normal distribution curve
 
 import numpy as np  # so can use mat()  array() directly
 import matplotlib.pyplot as plt
-from random import *
+import random
 
 
-def Observation(mu=3, sigma=0.1, num=1000):
+def Observation(mu=3, sigma=0.1, lambda_=5.0, num=1000):
      # mean and standard deviation
-    s = np.random.normal(mu, sigma, num)  # samples
+    normal_s = np.random.normal(mu, sigma, num)  # samples
+    possion_s = np.random.poisson(lambda_, num)
+    return normal_s, possion_s
+
+
+def AddingNoise(s):
     # add noise
     sr = np.ndarray(np.shape(s))
     i = 0
     for ss in sr:
-        d = float(randint(-10, 10)) / 1000
+        d = float(random.randint(-10, 10)) / 1000
         sr[i] = s[i] + d  # ss=s[i]+d
         # print(s[i],d,sr[i],ss) #(4.9369406581603013, 0.007, 4.1322144706073337e-316, 4.9439406581603009) ss can be read not be write
         i += 1
-    return s, sr
+    print("s : ", s[:10])
+    print("sr: ", sr[:10])
+    return sr
 
 
-def MLE(s):
+def MLE_Normal(s):
     mu = np.mean(s)  # dl/dmu =
-    sigma = np.var(s)  # dl/dsigma =
+    sigma = np.var(s)**(0.5)  # dl/dsigma =      #sigma is a square root of the variance
     return mu, sigma
+
+
+def MLE_Possion(s):
+    lambda_ = np.mean(s)
+    return lambda_
 
 
 from scipy.stats.kde import gaussian_kde
@@ -120,15 +132,31 @@ def Main():
     # figPlot("figure3 model trained by noisy one and origin data",x,myYr,x,y,"model trained by noisy one","origin")
     # figPlot("figure4 model trained by noisy one and noisy data",x,myYr,xr,yr,"model trained by noisy one","origin with noise")
     # plt.show()
-    mu, sigma = 2, 0.1
-    s, sr = Observation(mu, sigma, 1000)
-    print("with noise", MLE(sr))
-    print("no noise", MLE(s))
-    figPlot("density distribution", s, sr, 100, "no noise", "with noise")
+    mu, sigma = 7, 0.1
+    lambda_ = 5.0
+    s, ps = Observation(mu, sigma, lambda_, 1000)
+    print("s,ps:{} , {}".format(s, ps))
+    sr = AddingNoise(s)
+    psr = AddingNoise(ps)
+
+    print("no noise", MLE_Normal(s))
+    _mu, _sigma = MLE_Normal(sr)
+    print("with noise", _mu, _sigma)
+
+    figPlot("normal density distribution", s,
+            sr, 100, "no noise", "with noise")
 
     import matplotlib.mlab as mlab
     x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
     plt.plot(x, mlab.normpdf(x, mu, sigma), 'm-')
+    plt.plot(x, mlab.normpdf(x, _mu, _sigma), 'c-')
+
+    print("no noise", MLE_Possion(ps))
+    _lambda_ = MLE_Possion(psr)
+    print("with noise", _lambda_)
+    figPlot("poisson density distribution", ps,
+            psr, 100, "no noise", "with noise")
+    x = np.linspace(0, 2 * lambda_, 1000)
 
     plt.show()
 

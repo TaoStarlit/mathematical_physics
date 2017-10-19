@@ -27,7 +27,7 @@ model function is nothing to do with density distribution
 
 # Find the estimator
 For many models, a maximum likelihood estimator can be found as an explicit function of the observed data x1,x2,..,xn.
-by derivation: poission / normal 
+by derivation = 0: poission / normal   sigma is a square root of the variance         mu and lambda_ is the mean 
 # system of two element equations
 for linear, it is just a problem of linear algebra, for nonlinear ??
 For many other models, however, no closed-form solution to the maximization problem is known or available, 
@@ -54,7 +54,7 @@ The expression b3 = b ⋅ b ⋅ b is called the cube of b or b cube the volume o
 The expression 35 = 3 ⋅ 3 ⋅ 3 ⋅ 3 ⋅ 3 = 243 is call 3 raised to the 5th power. 3 is the base, 5 is the exponent, 243 is the power.
 the word "raised" is usually omitted, and sometimes "power" as well, so it can also read 3 to the 5th power,  3 to the 5.
 
-
+# sigmoid.py softmax.py
 # using sigmoid the hyperbolic tangent function to do normalization:
 Normalization is a way of reducing the influence of extreme values of outliers in the data without removing the from the data set.
 ~ limits the range of the normalized data to values between 0 and 1 or -1 and 1;  
